@@ -23,49 +23,42 @@
 // func Migrate() {
 // 	DB.AutoMigrate(&models.User{}, &models.Item{}, &models.Cart{}, &models.Order{})
 // }
+
 package database
 
 import (
-	"context"
 	"log"
-	"net"
 	"os"
-	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"shopping-cart/models"
 )
 
 var DB *gorm.DB
-
 func Connect() {
 	dsn := os.Getenv("DSN")
 	if dsn == "" {
 		log.Fatal("DSN environment variable not found")
 	}
 
-	// Force IPv4-only resolver
-	dialer := &net.Dialer{
-		Timeout:   5 * time.Second,
-		KeepAlive: 5 * time.Second,
-		Resolver: &net.Resolver{
-			PreferGo: true,
-			Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
-				return net.Dial("tcp4", address)
-			},
-		},
-	}
+	// Force DNS to resolve via Go to avoid IPv6 problems
+	os.Setenv("GODEBUG", "netdns=go")
 
-	sqlDB, err := dialer.Dial("tcp", "db.qhsdkmcdsrodcbvifrzh.supabase.co:5432")
-	if err != nil {
-		log.Fatalf("Custom TCP dial failed: %v", err)
-	}
-	defer sqlDB.Close()
+	var err error
+	DB, err = gorm.Open(postgres.New(postgres.Config{
+		DSN:                  dsn,
+		PreferSimpleProtocol: true,
+	}), &gorm.Config{})
 
-	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
-	log.Println("✅ Database connected successfully via IPv4")
+	log.Println("Database connected successfully")
+}
+
+
+func Migrate() {
+	DB.AutoMigrate(&models.User{}, &models.Item{}, &models.Cart{}, &models.Order{})
 }
