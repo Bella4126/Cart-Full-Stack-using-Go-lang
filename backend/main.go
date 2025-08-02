@@ -17,7 +17,11 @@ func main() {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "https://your-frontend-domain.com"}, // Add your frontend domain
+		AllowOrigins: []string{
+			"http://localhost:5173",                                        // For local development
+			"https://cart-full-stack-using-go-lang-1pts.vercel.app",      // Your Vercel URL
+			"https://*.vercel.app",                                        // All Vercel preview deployments
+		},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"*"},
 		AllowCredentials: true,
