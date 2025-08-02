@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 
-const API_BASE = 'http://localhost:8080'
+const API_BASE = 'https://cart-full-stack-using-go-lang.onrender.com'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
