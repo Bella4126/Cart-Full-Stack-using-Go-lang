@@ -34,7 +34,6 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"shopping-cart/models"
 )
 
 var DB *gorm.DB
