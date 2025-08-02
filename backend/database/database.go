@@ -23,6 +23,7 @@
 // func Migrate() {
 // 	DB.AutoMigrate(&models.User{}, &models.Item{}, &models.Cart{}, &models.Order{})
 // }
+
 package database
 
 import (
@@ -37,16 +38,19 @@ import (
 var DB *gorm.DB
 
 func Connect() {
-	// Read DSN from environment
 	dsn := os.Getenv("DSN")
 	if dsn == "" {
 		log.Fatal("DSN environment variable not found")
 	}
 
 	var err error
-	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	DB, err = gorm.Open(postgres.New(postgres.Config{
+		DSN:                  dsn,
+		PreferSimpleProtocol: true,
+	}), &gorm.Config{})
+
 	if err != nil {
-		log.Fatal("Failed to connect to database:", err)
+		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
 	log.Println("Database connected successfully")
