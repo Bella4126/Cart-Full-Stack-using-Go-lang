@@ -23,14 +23,12 @@
 // func Migrate() {
 // 	DB.AutoMigrate(&models.User{}, &models.Item{}, &models.Cart{}, &models.Order{})
 // }
-
 package database
 
 import (
 	"log"
 	"os"
 
-	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"shopping-cart/models"
@@ -39,15 +37,13 @@ import (
 var DB *gorm.DB
 
 func Connect() {
-	// Load environment variables from .env file
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	// Read DSN from environment
 	dsn := os.Getenv("DSN")
+	if dsn == "" {
+		log.Fatal("DSN environment variable not found")
+	}
 
+	var err error
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
